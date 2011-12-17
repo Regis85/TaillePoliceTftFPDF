@@ -23,10 +23,16 @@ $pdf->AddFont('DejaVu','','DejaVuSansCondensed.ttf',true);
 $pdf->AddFont('DejaVuSerif','','DejaVuSerif.ttf',true);
 $pdf->AddFont('DejaVuSerif','I','DejaVuSerif-Italic.ttf',true);
 $pdf->AddFont('DejaVuSerifGras','','DejaVuSerif-Bold.ttf',true);
+// $pdf->AddFont('EssaiPolice','','Comic_Sans_MS_Bold.ttf',true);
+
+// $police = 'EssaiPolice';
+// $police = 'Courier';
+$police = 'DejaVuSerif';
+$policeStyle = '';
 
 $pdf->AddPage();
 
-$pdf->SetFont('DejaVuSerif','',$taillePolice);
+$pdf->SetFont($police,$policeStyle,$taillePolice);
 
 // calcul du nombre de lignes
 $taille_txt = intval($pdf->TailleChapitre($txt, 90));

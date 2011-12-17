@@ -3,7 +3,8 @@
  * Taille de la police true-type dans un MultiCell de tFPDF
  * 
  * Réduit la taille de la police dans un MultiCell de tFPDF
- * afin que le texte tienne dans le cadre
+ * afin que le texte tienne dans le cadre. La taille de la ligne est définie 
+ * par floor(taille de police / 2)
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,24 +130,20 @@ class ptFPDF extends tFPDF
 					if ($nbLignesParagraphe) {
 						$nbLignes = $nbLignes + $nbLignesParagraphe;
 						if (($nbLignes * $tailleLigne) >= $hautCadre) {
-							//$taillePolice = $taillePolice - .5;
 							$taillePolice = $taillePolice - $this->DecrementTexte(($nbLignes * $tailleLigne), $hautCadre);
 							if ($taillePolice < $minPolice) {
 								return FALSE;
 							}
+							$ok = FALSE;
 							break;
-							$ok = FALSE;
-						} else {
-							$ok = FALSE;
 						}
-						
 					} else {
 						$taillePolice = $taillePolice - .5;
 						if ($taillePolice < $minPolice) {
 							return FALSE;
 						}
-						break;
 						$ok = FALSE;
+						break;
 					}
 					$ok = TRUE;
 				}

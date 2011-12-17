@@ -20,8 +20,11 @@ $pdf->AddFont('DejaVu','','DejaVuSansCondensed.ttf',true);
 $pdf->AddFont('DejaVuSerif','','DejaVuSerif.ttf',true);
 $pdf->AddFont('DejaVuSerif','I','DejaVuSerif-Italic.ttf',true);
 $pdf->AddFont('DejaVuSerifGras','','DejaVuSerif-Bold.ttf',true);
+// $pdf->AddFont('EssaiPolice','','Comic_Sans_MS_Bold.ttf',true);
 
 $police = 'DejaVuSerif';
+// $police = 'Courier';
+// $police = 'EssaiPolice';
 $policeStyle = '';
 
 $pdf->AddPage();
