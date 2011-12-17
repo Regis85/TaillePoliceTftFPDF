@@ -4,8 +4,8 @@
  * 
  * Réduit la taille de la police dans un MultiCell de tFPDF
  * afin que le texte tienne dans le cadre. La taille de la ligne est définie 
- * par floor(taille de police / 2)
- * 
+ * par (taille de police + marge de la cellule)
+ *  
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -35,11 +35,16 @@ class ptFPDF extends tFPDF
 	function TailleChapitre($texte, $tailleCadre)
 	{
 		$Lignes = array();
-		$mots = explode(' ', $texte);
+		$mots = explode(" ", $texte);
 		$i = 0;
 		$Lignes[$i] = '';
 		foreach ($mots as $mot) {
-			if ($this->GetStringWidth($Lignes[$i].$mot) > ($tailleCadre-2)) {
+			if ($this->GetStringWidth($mot) > ($tailleCadre-(2*$this->cMargin))) {
+				// un mot est plus grand que le cadre
+				return FALSE;
+				die ('Un mot est plus grand que le cadre');
+			}
+			if ($this->GetStringWidth($Lignes[$i].$mot) > ($tailleCadre-(2*$this->cMargin))) {
 				$i++;
 			$Lignes[$i] = '';
 			}
@@ -64,16 +69,26 @@ class ptFPDF extends tFPDF
 	function AdapteTaille($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre) {
 		$ok = FALSE;
 		while (!$ok) {
-			$this->	SetFont($police,$policeStyle,$taillePolice);
-			$tailleLigne = floor($taillePolice / 2);
-			$taille_txt = intval($this->TailleChapitre($txt, $largeCadre));
-			if (($taille_txt * $tailleLigne) < $hautCadre) {
-				return $tailleLigne;
-			} else {
-				$taillePolice = $taillePolice - $this->DecrementTexte(($taille_txt * $tailleLigne), $hautCadre); 
+			$this->SetFont($police,$policeStyle,$taillePolice);
+			$tailleLigne = ($this->cMargin + $this->FontSize);
+			$taille_txt = $this->TailleChapitre($txt, $largeCadre);
+			if (!$taille_txt) {
+				// TailleChapitre renvoie 0, ça arrive si un mot ne tient pas dans le cadre
+				$taillePolice = $taillePolice - .5;
 				if ($taillePolice < $minPolice) {
+					// La police est trop petite, on renvoie faux
 					return FALSE;
 				}
+			} else {
+				if (($taille_txt * $tailleLigne) < $hautCadre) {
+					return $tailleLigne;
+				} else {
+					$taillePolice = $taillePolice - $this->DecrementTexte(($taille_txt * $tailleLigne), $hautCadre); 
+					if ($taillePolice < $minPolice) {
+						return FALSE;
+					}
+				}
+				
 			}
 		}
 	}
@@ -86,7 +101,7 @@ class ptFPDF extends tFPDF
 	 * @return float				Valeur à décrémenter 
 	 */
 	protected function DecrementTexte($tailleTexte, $hauteurCadre) {
-		$calculDecrement = (floor(($hauteurCadre * 2) /$tailleTexte)/2);
+		$calculDecrement = (floor(($hauteurCadre * 2) /$tailleTexte))/2;
 		$decrement= max(.5, $calculDecrement);
 		return $decrement;
 	}
@@ -105,13 +120,13 @@ class ptFPDF extends tFPDF
 	 */
 	function AvecParagraphe($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre) {
 		$finParagraphe = '';
-		
-		if (mb_ereg_match('.*\r\n', $txt)) {
-			$finParagraphe = '\r\n';
-		} elseif (mb_ereg_match('.*\n', $txt)) {
-			$finParagraphe = '\n';
-		} elseif (mb_ereg_match('.*\r', $txt)) {
-			$finParagraphe = '\r';
+		// On cherche le caractère retour chariot
+		if (mb_ereg_match(".*\r\n", $txt)) {
+			$finParagraphe = "\r\n";
+		} elseif (mb_ereg_match(".*\n", $txt)) {
+			$finParagraphe = "\n";
+		} elseif (mb_ereg_match(".*\r", $txt)) {
+			$finParagraphe = "\r";
 		}
 		
 		if ($finParagraphe == '') {
@@ -121,31 +136,38 @@ class ptFPDF extends tFPDF
 			$paragraphes = explode ($finParagraphe, $txt);
 			$nbParagraphe = count($paragraphes);
 			$taillePolice = min((($hautCadre / $nbParagraphe)*2),$taillePolice);
-			$taillePolice = $taillePolice;
-			$nbLignes=0;
 			while (!$ok) {
+				$nbLignes=0;
+				$this->SetFont($police,$policeStyle,$taillePolice);
+				// On calcule la hauteur de ligne avec la taille de police
+				$tailleLigne = ($this->cMargin + $this->FontSize);
 				foreach ($paragraphes as $paragraphe) {
-					$tailleLigne = floor($taillePolice / 2);
-					$nbLignesParagraphe = $this->AdapteTaille($paragraphe, $police, $policeStyle, $taillePolice, $taillePolice, $largeCadre, $hautCadre);
+					$ok = TRUE;
+					$nbLignesParagraphe = $this->TailleChapitre($paragraphe, $largeCadre);
 					if ($nbLignesParagraphe) {
-						$nbLignes = $nbLignes + $nbLignesParagraphe;
+						$nbLignes += $nbLignesParagraphe;
 						if (($nbLignes * $tailleLigne) >= $hautCadre) {
+							// On est trop grand
 							$taillePolice = $taillePolice - $this->DecrementTexte(($nbLignes * $tailleLigne), $hautCadre);
 							if ($taillePolice < $minPolice) {
+								// La police est trop petite, on renvoie faux
 								return FALSE;
 							}
+							// On recommence avec une police plus petite
 							$ok = FALSE;
 							break;
 						}
 					} else {
+						// TailleChapitre renvoie 0, ça arrive si un mot ne tient pas dans le cadre
 						$taillePolice = $taillePolice - .5;
 						if ($taillePolice < $minPolice) {
+							// La police est trop petite, on renvoie faux
 							return FALSE;
 						}
+						
 						$ok = FALSE;
 						break;
 					}
-					$ok = TRUE;
 				}
 			}
 			return $tailleLigne;

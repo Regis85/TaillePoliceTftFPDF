@@ -9,10 +9,10 @@ $largeCadre = isset ($_GET['largeCadre']) ? intval($_GET['largeCadre']) : 12;
 $hautCadre = isset ($_GET['hautCadre']) ? intval($_GET['hautCadre']) : 12;
 
 $fichier = '10k_c1.txt';
+$fichier = '20k_c1.txt';
 $txt = file_get_contents($fichier);
 
 $taillePolice = $maxPolice;
-// $tailleLigne = floor($taillePolice / 2);
 
 $pdf = new ptFPDF();
 
@@ -23,11 +23,18 @@ $pdf->AddFont('DejaVuSerif','I','DejaVuSerif-Italic.ttf',true);
 $pdf->AddFont('DejaVuSerifGras','','DejaVuSerif-Bold.ttf',true);
 
 $police = 'DejaVuSerif';
+$police = 'Courier';
 $policeStyle = '';
 
 $pdf->AddPage();
 
 $taillePoliceOrigine = $taillePolice;
+$pdf->SetFont($police,$policeStyle,$taillePolice);
+
+if ("Core" == $pdf->CurrentFont['type']) {
+	// On n'a pas une police TTF
+	$txt = utf8_decode($txt);
+}
 
 // on cherche le nombre de ligne et au besoin on réduit la taille
 $tailleLigne = $pdf->AdapteTaille($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);

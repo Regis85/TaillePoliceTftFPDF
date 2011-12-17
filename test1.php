@@ -27,6 +27,7 @@ $pdf->AddFont('DejaVuSerifGras','','DejaVuSerif-Bold.ttf',true);
 
 // $police = 'EssaiPolice';
 // $police = 'Courier';
+// $police = 'helvetica';
 $police = 'DejaVuSerif';
 $policeStyle = '';
 
@@ -34,12 +35,26 @@ $pdf->AddPage();
 
 $pdf->SetFont($police,$policeStyle,$taillePolice);
 
+if ("Core" == $pdf->CurrentFont['type']) {
+	// On n'a pas une police TTF
+	$txt2 = utf8_decode($txt2);
+	$txt = utf8_decode($txt);
+}
+
+$tailleLigne = ($pdf->cMargin + $pdf->FontSize);
 // calcul du nombre de lignes
 $taille_txt = intval($pdf->TailleChapitre($txt, 90));
 $taille_txt2 = intval($pdf->TailleChapitre($txt2, 90));
 $diffTaille = ($taille_txt2 - $taille_txt) * $tailleLigne;
 
+// on affiche des données
 $pdf->Write(5,"Taille de la police : ".$taillePolice.', hauteur des lignes : '.$tailleLigne.' mm');
+$pdf->Ln();
+$pdf->Write(5,"Police : ".$pdf->FontFamily.", marge : ".$pdf->cMargin.', hauteur de la police : '.$pdf->FontSize.', type : '.$pdf->CurrentFont['type']);
+$pdf->Ln();
+$pdf->Write(5,"hauteur page : ".$pdf->h.", cMargin : ".$pdf->cMargin." - ".$pdf->FontSize." - ".$pdf->FontSizePt);
+$pdf->Ln();
+$pdf->Write(5,"tMargin ".$pdf->tMargin.", bMargin : ".$pdf->bMargin);
 $pdf->Ln();
 $pdf->Write(5,"La taille de ces textes est : ".$taille_txt.' lignes et '.$taille_txt2.' lignes. ');
 $pdf->Write(5,"La différence sera de  : ".($taille_txt2 - $taille_txt).' x '.$tailleLigne.' mm soit '.$diffTaille.' mm');
@@ -50,23 +65,27 @@ $pdf->SetY($pdf->getY() + 3);
 $hDebut = $pdf->getY();
 $lDebut = $pdf->getX();
 
+// Affichage du premier texte
 $pdf->MultiCell(90,$tailleLigne,$txt,1,'L');
-		$h1 = $pdf->getY();
-		$l = $pdf->getX();
-		
+
+// affichage de la position de fin du cadre
+$h1 = $pdf->getY();
+$l = $pdf->getX();
 // Saut de ligne
 $pdf->Ln();
 $pdf->Cell(0,5,"y : ".$h1." x : ".$l);
 
-
+// Affichage du premier texte
 $pdf->setXY($lDebut+92,$hDebut);
 $pdf->MultiCell(90,$tailleLigne,$txt2,1,'L');
-		$h2 = $pdf->getY();
-		$l = $lDebut+92;
-		// Saut de ligne
-		$pdf->Ln();
+
+// on affiche d'autres infos
+$h2 = $pdf->getY();
+$l = $lDebut+92;
+// Saut de ligne
+$pdf->Ln();
 $pdf->SetX($lDebut+92);
-		$pdf->Cell(0,5,"y : ".$h2." x : ".$l);
+$pdf->Cell(0,5,"y : ".$h2." x : ".$l);
 		
 // Saut de ligne
 $pdf->Ln();
