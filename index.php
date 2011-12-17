@@ -17,6 +17,13 @@ if (isset ($_POST['valide']) && $_POST['valide']=='multi') {
 	$hautCadre = (isset ($_POST['hautCadre']) && ($_POST['hautCadre']>10)) ? $_POST['hautCadre'] : '12';
 	header("Location: ./test3.php?maxPolice=".$maxPolice."&minPolice=".$minPolice."&largeCadre=".$largeCadre."&hautCadre=".$hautCadre);
 }
+if (isset ($_POST['valide']) && $_POST['valide']=='centre') {
+	$maxPolice = (isset ($_POST['maxPolice']) && ($_POST['maxPolice']>0)) ? $_POST['maxPolice'] : '12';
+	$minPolice = (isset ($_POST['minPolice']) && ($_POST['minPolice']>0)) ? $_POST['minPolice'] : '2';
+	$largeCadre = (isset ($_POST['largeCadre']) && ($_POST['largeCadre']>10)) ? $_POST['largeCadre'] : '12';
+	$hautCadre = (isset ($_POST['hautCadre']) && ($_POST['hautCadre']>10)) ? $_POST['hautCadre'] : '12';
+	header("Location: ./test4.php?maxPolice=".$maxPolice."&minPolice=".$minPolice."&largeCadre=".$largeCadre."&hautCadre=".$hautCadre);
+}
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr">
@@ -73,8 +80,11 @@ if (isset ($_POST['valide']) && $_POST['valide']=='multi') {
 				<label for="hautCadre">Hauteur maximum du cadre (en mm) : </label>
 				<input type='text' name ="hautCadre" id="hautCadre" />
 				<br />
-				<button type="submit" name="valide" value="multi" title="Calcul hauteur">
+				<button type="submit" name="valide" value="multi" title="Adapter une police">
 					Adapter un texte multi-paragraphe à un cadre
+				</button> 
+				<button type="submit" name="valide" value="centre" title="Centre en hauteur">
+					Centrer un texte multi-paragraphe dans un cadre
 				</button> 
 			</p>
 		</form>	

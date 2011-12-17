@@ -25,6 +25,8 @@
  */
 class ptFPDF extends tFPDF
 {
+	var $numLignes;
+	
 	/**
 	 * Calcul du nombre de lignes nécessaire
 	 *
@@ -164,16 +166,36 @@ class ptFPDF extends tFPDF
 							// La police est trop petite, on renvoie faux
 							return FALSE;
 						}
-						
 						$ok = FALSE;
 						break;
 					}
 				}
 			}
+			$this->numLignes = $nbLignes;
 			return $tailleLigne;
 		}
 	}
 
+	/**
+	 * Renvoie la position verticale du cadre texte pour le centrer
+	 *
+	 * @param text	$txt			Texte à traiter
+	 * @param text	$police			Police à utiliser
+	 * @param text	$policeStyle	Gras, italique, souligné
+	 * @param int	$taillePolice	Taille maximale de la police
+	 * @param int	$minPolice		Taille minimum de la police
+	 * @param int	$largeCadre		Largeur du cadre
+	 * @param int	$hautCadre		Hauteur du cadre
+	 * @param int	$hDebut			Hauteur de début du cadre
+	 * @return int	Décalage vers le bas à appliquer
+	 */
+	function CentreMulticell($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre, $hDebut) {
+		// on recherche le nombre de lignes
+		$tailleLigne = $this->AvecParagraphe($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);
+		$hautTexte = $this->numLignes * $tailleLigne;
+		$position = floor(($hautCadre - $hautTexte) / 2) + $hDebut;
+		return $position;
+	}
 
 }
 

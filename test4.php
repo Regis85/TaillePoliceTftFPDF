@@ -8,7 +8,7 @@ $largeCadre = isset ($_GET['largeCadre']) ? intval($_GET['largeCadre']) : 12;
 $hautCadre = isset ($_GET['hautCadre']) ? intval($_GET['hautCadre']) : 12;
 
 $fichier = '20k_c1.txt';
-// $fichier = '10k_c1.txt';
+$fichier = '10k_c1.txt';
 $txt = file_get_contents($fichier);
 
 $taillePolice = $maxPolice;
@@ -23,7 +23,7 @@ $pdf->AddFont('DejaVuSerifGras','','DejaVuSerif-Bold.ttf',true);
 // $pdf->AddFont('EssaiPolice','','Comic_Sans_MS_Bold.ttf',true);
 
 $police = 'DejaVuSerif';
-$police = 'Courier';
+// $police = 'Courier';
 // $police = 'EssaiPolice';
 $policeStyle = '';
 
@@ -37,16 +37,16 @@ if ("Core" == $pdf->CurrentFont['type']) {
 	$txt = utf8_decode($txt);
 }
 
-// on cherche le nombre de ligne et au besoin on réduit la taille
-$tailleLigne = $pdf->AvecParagraphe($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);
+// On trace le cadre
+$hDebut = $pdf->getY();
+$lDebut = $pdf->getX();
+$pdf->Rect($lDebut, $hDebut, $largeCadre, $hautCadre);
 
-if (!$tailleLigne) {
-	$txt = "texte trop grand";
-	$pdf->	SetFont($police,$policeStyle,$taillePoliceOrigine);
-	$tailleLigne = ($pdf->cMargin + $pdf->FontSize);
-}
-$pdf->MultiCell($largeCadre,$tailleLigne,$txt,1,'L');
-$pdf->Write($tailleLigne,"hauteur ligne : ".$tailleLigne." -> hauteur police : ".$pdf->FontSize." -> taille police : ".$pdf->FontSizePt);
+// on cherche le $y du cadre texte
+$positionCadre = $pdf->CentreMulticell($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre, $hDebut);
+$pdf->SetY($positionCadre);
+$tailleLigne = ($pdf->cMargin + $pdf->FontSize);
+$pdf->MultiCell($largeCadre,$tailleLigne,$txt,1,'J');
 
 $pdf->Output();
 
