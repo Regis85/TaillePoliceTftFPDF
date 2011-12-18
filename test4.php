@@ -8,7 +8,7 @@ $largeCadre = isset ($_GET['largeCadre']) ? intval($_GET['largeCadre']) : 12;
 $hautCadre = isset ($_GET['hautCadre']) ? intval($_GET['hautCadre']) : 12;
 
 $fichier = '20k_c1.txt';
-$fichier = '10k_c1.txt';
+//$fichier = '10k_c1.txt';
 $txt = file_get_contents($fichier);
 
 $taillePolice = $maxPolice;

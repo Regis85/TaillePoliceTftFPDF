@@ -38,7 +38,7 @@ if ("Core" == $pdf->CurrentFont['type']) {
 }
 
 // on cherche le nombre de ligne et au besoin on réduit la taille
-$tailleLigne = $pdf->AvecParagraphe($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);
+$tailleLigne = $pdf->AdapteTaille($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);
 
 if (!$tailleLigne) {
 	$txt = "texte trop grand";

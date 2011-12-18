@@ -25,7 +25,7 @@
  */
 class ptFPDF extends tFPDF
 {
-	var $numLignes;
+	protected $numLignes;
 	
 	/**
 	 * Calcul du nombre de lignes nécessaire
@@ -57,70 +57,33 @@ class ptFPDF extends tFPDF
 	}
 	
 	/**
-	 * Adapte la taille de la police au cadre
-	 *
-	 * @param text $txt				Texte à traiter
-	 * @param tex  $police			Police à utiliser
-	 * @param tex  $policeStyle		Gras, italique, souligné
-	 * @param int $taillePolice		Taille maximale de la police
-	 * @param int $minPolice		Taille minimum de la police
-	 * @param int $largeCadre		Largeur du cadre
-	 * @param int $hautCadre		Hauteur du cadre
-	 * @return int					Taille de la ligne ou faux si aucune taille de police ne convient
-	 */
-	function AdapteTaille($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre) {
-		$ok = FALSE;
-		while (!$ok) {
-			$this->SetFont($police,$policeStyle,$taillePolice);
-			$tailleLigne = ($this->cMargin + $this->FontSize);
-			$taille_txt = $this->TailleChapitre($txt, $largeCadre);
-			if (!$taille_txt) {
-				// TailleChapitre renvoie 0, ça arrive si un mot ne tient pas dans le cadre
-				$taillePolice = $taillePolice - .5;
-				if ($taillePolice < $minPolice) {
-					// La police est trop petite, on renvoie faux
-					return FALSE;
-				}
-			} else {
-				if (($taille_txt * $tailleLigne) < $hautCadre) {
-					return $tailleLigne;
-				} else {
-					$taillePolice = $taillePolice - $this->DecrementTexte(($taille_txt * $tailleLigne), $hautCadre); 
-					if ($taillePolice < $minPolice) {
-						return FALSE;
-					}
-				}
-				
-			}
-		}
-	}
-	
-	/**
 	 * Calcule le décrément à appliquer
 	 *
-	 * @param int $tailleTexte		Hauteur du texte
-	 * @param int $hauteurCadre		Hauteur du cadre
+	 * @param int	$tailleTexte	Hauteur du texte
+	 * @param int	$hauteurCadre	Hauteur du cadre
+	 * @param float	$decrementMin	Valeur minimale de la réduction de la taille de police en cas de dépassement
 	 * @return float				Valeur à décrémenter 
 	 */
-	protected function DecrementTexte($tailleTexte, $hauteurCadre) {
+	protected function DecrementTexte($tailleTexte, $hauteurCadre,$decrementMin=.5) {
 		$calculDecrement = (floor(($hauteurCadre * 2) /$tailleTexte))/2;
-		$decrement= max(.5, $calculDecrement);
+		$decrement= max($decrementMin, $calculDecrement);
 		return $decrement;
 	}
 	
 	/**
 	 * Adapte la taille de la police au cadre en tenant compte des paragraphes
 	 *
-	 * @param text $txt				Texte à traiter
-	 * @param tex  $police			Police à utiliser
-	 * @param tex  $policeStyle		Gras, italique, souligné
-	 * @param int $taillePolice		Taille maximale de la police
-	 * @param int $minPolice		Taille minimum de la police
-	 * @param int $largeCadre		Largeur du cadre
-	 * @param int $hautCadre		Hauteur du cadre
+	 * @param text	$txt			Texte à traiter
+	 * @param tex	$police			Police à utiliser
+	 * @param tex	$policeStyle	Gras, italique, souligné
+	 * @param int	$taillePolice	Taille maximale de la police
+	 * @param int	$minPolice		Taille minimum de la police
+	 * @param int	$largeCadre		Largeur du cadre
+	 * @param int	$hautCadre		Hauteur du cadre
+	 * @param float	$decrementMin	Valeur minimale de la réduction de la taille de police en cas de dépassement
 	 * @return int					Taille de la ligne ou faux si aucune taille de police ne convient
 	 */
-	function AvecParagraphe($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre) {
+	function  AdapteTaille($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre,$decrementMin=.5) {
 		$finParagraphe = '';
 		// On cherche le caractère retour chariot
 		if (mb_ereg_match(".*\r\n", $txt)) {
@@ -171,6 +134,7 @@ class ptFPDF extends tFPDF
 					}
 				}
 			}
+			// on conserve le nombre de lignes pour pouvoir centrer le texte
 			$this->numLignes = $nbLignes;
 			return $tailleLigne;
 		}
@@ -191,7 +155,7 @@ class ptFPDF extends tFPDF
 	 */
 	function CentreMulticell($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre, $hDebut) {
 		// on recherche le nombre de lignes
-		$tailleLigne = $this->AvecParagraphe($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);
+		$tailleLigne = $this->AdapteTaille($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);
 		if(!$tailleLigne) {
 			// Le texte est trop grand
 			return FALSE;
