@@ -192,6 +192,10 @@ class ptFPDF extends tFPDF
 	function CentreMulticell($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre, $hDebut) {
 		// on recherche le nombre de lignes
 		$tailleLigne = $this->AvecParagraphe($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre);
+		if(!$tailleLigne) {
+			// Le texte est trop grand
+			return FALSE;
+		}
 		$hautTexte = $this->numLignes * $tailleLigne;
 		$position = floor(($hautCadre - $hautTexte) / 2) + $hDebut;
 		return $position;

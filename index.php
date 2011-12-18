@@ -38,7 +38,7 @@ if (isset ($_POST['valide']) && $_POST['valide']=='centre') {
 				<label for="policeCalcul">Taille de la police : </label>
 				<input type='text' name ="police" id="policeCalcul" />
 				<br />
-				<button type="submit" name="valide" value="calcul" title="Calcul hauteur">
+				<button type="submit" name="valide" value="calcul" title="Calcul différence de hauteur (taille 12 par défaut)">
 					Calcul de la hauteur d'un texte
 				</button> 
 			</p>
@@ -59,7 +59,7 @@ if (isset ($_POST['valide']) && $_POST['valide']=='centre') {
 				<label for="hautCadre">Hauteur maximum du cadre (en mm) : </label>
 				<input type='text' name ="hautCadre" id="hautCadre" />
 				<br />
-				<button type="submit" name="valide" value="adapte" title="Calcul hauteur">
+				<button type="submit" name="valide" value="adapte" title="Adapter une police (taille maxi:12 mini:2 cadre:12x12 par défaut)">
 					Adaptation de la police à un cadre
 				</button> 
 			</p>
@@ -80,10 +80,10 @@ if (isset ($_POST['valide']) && $_POST['valide']=='centre') {
 				<label for="hautCadre">Hauteur maximum du cadre (en mm) : </label>
 				<input type='text' name ="hautCadre" id="hautCadre" />
 				<br />
-				<button type="submit" name="valide" value="multi" title="Adapter une police">
+				<button type="submit" name="valide" value="multi" title="Adapter une police, texte multi-paragraphe (taille maxi:12 mini:2 cadre:12x12 par défaut)">
 					Adapter un texte multi-paragraphe à un cadre
 				</button> 
-				<button type="submit" name="valide" value="centre" title="Centre en hauteur">
+				<button type="submit" name="valide" value="centre" title="Centre en hauteur un texte multi-paragraphe (taille maxi:12 mini:2 cadre:12x12 par défaut)">
 					Centrer un texte multi-paragraphe dans un cadre
 				</button> 
 			</p>

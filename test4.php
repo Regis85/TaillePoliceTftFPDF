@@ -44,6 +44,10 @@ $pdf->Rect($lDebut, $hDebut, $largeCadre, $hautCadre);
 
 // on cherche le $y du cadre texte
 $positionCadre = $pdf->CentreMulticell($txt, $police, $policeStyle, $taillePolice, $minPolice, $largeCadre, $hautCadre, $hDebut);
+if (FALSE === $positionCadre) {
+	$txt = 'Le texte est trop grand';
+	$positionCadre = $hDebut = $pdf->getY();
+}
 $pdf->SetY($positionCadre);
 $tailleLigne = ($pdf->cMargin + $pdf->FontSize);
 $pdf->MultiCell($largeCadre,$tailleLigne,$txt,1,'J');
